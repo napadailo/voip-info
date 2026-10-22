@@ -1,0 +1,709 @@
+# Каталог продуктов. repo - GitHub owner/name; tag_filter - regex отбора тегов;
+# nvd/nvd_filter - поиск CVE в NVD; deps - зависимости "id:тип" (bundled, linked, optional, runtime, platform);
+# track: commits - для проектов без релизов; npm/pypi/docker - пакеты для метрик использования;
+# desc - описание на языках интерфейса: {en: ..., ru: ...}, строка без языков считается английской.
+products:
+- id: asterisk
+  tag_filter: '^\d'
+  deps:
+  - 'pjsip:bundled'
+  - 'spandsp:optional'
+  - 'opus:optional'
+  nvd: Asterisk
+  nvd_filter: '(?i)asterisk (open source|is an open|before|through|certified|\d)|digium|sangoma|res_pjsip|chan_'
+  name: Asterisk
+  category: PBX
+  repo: asterisk/asterisk
+  homepage: 'https://www.asterisk.org'
+  desc:
+    en: "Classic open-source PBX and telephony platform by Sangoma (PJSIP, ARI, AMI)."
+    ru: "Классическая open-source PBX/телефонная платформа от Sangoma (PJSIP, ARI, AMI)."
+- id: freeswitch
+  deps:
+  - 'sofia-sip:linked'
+  - 'spandsp:linked'
+  - 'opus:linked'
+  nvd: FreeSWITCH
+  name: FreeSWITCH
+  category: PBX
+  repo: signalwire/freeswitch
+  homepage: 'https://signalwire.com/freeswitch'
+  desc:
+    en: "Modular softswitch and media server by SignalWire: ESL, mod_verto, conferences."
+    ru: "Модульный softswitch/медиасервер от SignalWire, ESL, mod_verto, конференции."
+- id: fusionpbx
+  deps:
+  - 'freeswitch:platform'
+  nvd: FusionPBX
+  name: FusionPBX
+  category: PBX
+  repo: fusionpbx/fusionpbx
+  homepage: 'https://www.fusionpbx.com'
+  desc:
+    en: "Multi-tenant web PBX on top of FreeSWITCH."
+    ru: "Multi-tenant веб-PBX поверх FreeSWITCH."
+- id: freepbx
+  deps:
+  - 'asterisk:platform'
+  nvd: FreePBX
+  name: FreePBX
+  category: PBX
+  repo: FreePBX/framework
+  homepage: 'https://www.freepbx.org'
+  desc:
+    en: "Web GUI and distribution on top of Asterisk (Sangoma)."
+    ru: "Веб-GUI и дистрибутив поверх Asterisk (Sangoma)."
+- id: wazo
+  deps:
+  - 'asterisk:platform'
+  nvd: Wazo
+  name: Wazo Platform
+  category: PBX
+  repo: wazo-platform/wazo-calld
+  homepage: 'https://wazo-platform.org'
+  desc:
+    en: "API-first UC/PBX platform on Asterisk (microservices)."
+    ru: "API-first UC/PBX платформа на Asterisk (микросервисы)."
+- id: kamailio
+  deps:
+  - 'rtpengine:runtime'
+  - 'rtpproxy:runtime'
+  nvd: Kamailio
+  name: Kamailio
+  category: SIP Proxy
+  repo: kamailio/kamailio
+  homepage: 'https://www.kamailio.org'
+  desc:
+    en: "High-load SIP server: proxy, registrar, load balancer, SBC scenarios."
+    ru: "Высоконагруженный SIP-сервер: proxy, registrar, LB, SBC-сценарии."
+- id: opensips
+  docker:
+  - opensips/opensips
+  deps:
+  - 'rtpengine:runtime'
+  - 'rtpproxy:runtime'
+  nvd: OpenSIPS
+  name: OpenSIPS
+  category: SIP Proxy
+  repo: OpenSIPS/opensips
+  homepage: 'https://opensips.org'
+  desc:
+    en: "SIP proxy, SBC and load balancer with B2BUA modules, a fork of the SER line."
+    ru: "SIP proxy/SBC/LB с B2BUA-модулями, форк SER-ветки."
+- id: drachtio
+  docker:
+  - drachtio/drachtio-server
+  nvd: drachtio
+  name: drachtio-server
+  category: SIP Proxy
+  repo: drachtio/drachtio-server
+  homepage: 'https://drachtio.org'
+  desc:
+    en: "SIP server driven from Node.js (the base of jambonz)."
+    ru: "SIP-сервер, управляемый из Node.js (основа jambonz)."
+- id: sems
+  name: SEMS
+  category: SIP Proxy
+  repo: sems-server/sems
+  homepage: 'https://github.com/sems-server/sems'
+  desc:
+    en: "SIP Express Media Server: B2BUA, SBC, conferences."
+    ru: "SIP Express Media Server: B2BUA, SBC, конференции."
+- id: routr
+  docker:
+  - fonoster/routr-one
+  name: Routr
+  category: SIP Proxy
+  repo: fonoster/routr
+  homepage: 'https://routr.io'
+  desc:
+    en: "Cloud-native SIP proxy, registrar and load balancer for Kubernetes."
+    ru: "Cloud-native SIP proxy/registrar/LB для Kubernetes."
+- id: flexisip
+  deps:
+  - 'linphone:linked'
+  nvd: Flexisip
+  name: Flexisip
+  category: SIP Proxy
+  repo: BelledonneCommunications/flexisip
+  homepage: 'https://www.linphone.org/en/flexisip-sip-server/'
+  desc:
+    en: "Belledonne SIP server (Linphone): push, presence, conferences."
+    ru: "SIP-сервер Belledonne (Linphone): push, presence, конференции."
+- id: resiprocate
+  nvd: reSIProcate
+  name: reSIProcate
+  category: SIP Proxy
+  repo: resiprocate/resiprocate
+  tag_filter: ^resiprocate-
+  homepage: 'https://www.resiprocate.org'
+  desc:
+    en: "C++ SIP stack with the repro proxy and the reTurn TURN server."
+    ru: "C++ SIP-стек и repro proxy, reTurn TURN-сервер."
+- id: rtpengine
+  nvd: rtpengine
+  name: rtpengine
+  category: Media/RTP
+  repo: sipwise/rtpengine
+  homepage: 'https://rtpengine.readthedocs.io'
+  desc:
+    en: "RTP/SRTP proxy with kernel forwarding, transcoding and recording (Sipwise)."
+    ru: "RTP/SRTP-прокси с kernel forwarding, транскодингом, записью (Sipwise)."
+- id: rtpproxy
+  nvd: rtpproxy
+  # the rtpproxy modules of OpenSIPS and Kamailio are not the relay
+  nvd_exclude: '(?i)(determined|discovered|found|detected|identified) in (opensips|kamailio)|(opensips|kamailio) (up to|through|before)'
+  name: RTPProxy
+  category: Media/RTP
+  repo: sippy/rtpproxy
+  homepage: 'https://www.rtpproxy.org'
+  desc:
+    en: "High-performance RTP relay for NAT traversal."
+    ru: "Высокопроизводительный RTP-релей для NAT traversal."
+- id: coturn
+  docker:
+  - coturn/coturn
+  nvd: coturn
+  name: coturn
+  category: Media/RTP
+  repo: coturn/coturn
+  tag_filter: '^\d'
+  homepage: 'https://github.com/coturn/coturn'
+  desc:
+    en: "The standard open-source TURN/STUN server."
+    ru: "Стандартный open-source TURN/STUN-сервер."
+- id: eturnal
+  name: eturnal
+  category: Media/RTP
+  repo: processone/eturnal
+  homepage: 'https://eturnal.net'
+  desc:
+    en: "STUN/TURN server in Erlang (ProcessOne)."
+    ru: "STUN/TURN-сервер на Erlang (ProcessOne)."
+- id: stunner
+  name: STUNner
+  category: Media/RTP
+  repo: l7mp/stunner
+  homepage: 'https://github.com/l7mp/stunner'
+  desc:
+    en: "Kubernetes media gateway for WebRTC (TURN as an ingress)."
+    ru: "Kubernetes media gateway для WebRTC (TURN как ingress)."
+- id: janus
+  npm:
+  - janus-gateway
+  deps:
+  - 'sofia-sip:optional'
+  - 'opus:optional'
+  nvd: Janus
+  nvd_filter: '(?i)janus (gateway|webrtc)|meetecho'
+  name: Janus Gateway
+  category: WebRTC
+  repo: meetecho/janus-gateway
+  homepage: 'https://janus.conf.meetecho.com'
+  desc:
+    en: "General-purpose WebRTC server with plugins (SIP, VideoRoom)."
+    ru: "WebRTC-сервер общего назначения с плагинами (SIP, VideoRoom)."
+- id: jvb
+  docker:
+  - jitsi/jvb
+  name: Jitsi Videobridge
+  category: WebRTC
+  repo: jitsi/jitsi-videobridge
+  tag_filter: jitsi-meet_
+  homepage: 'https://jitsi.org'
+  desc:
+    en: "The SFU of the Jitsi project."
+    ru: "SFU проекта Jitsi."
+- id: jitsi-meet
+  docker:
+  - jitsi/web
+  deps:
+  - 'jvb:runtime'
+  nvd: Jitsi
+  name: Jitsi Meet
+  category: WebRTC
+  repo: jitsi/jitsi-meet
+  tag_filter: ^jitsi-meet_
+  homepage: 'https://jitsi.org/jitsi-meet/'
+  desc:
+    en: "Open-source video conferencing on top of JVB."
+    ru: "Open-source ВКС поверх JVB."
+- id: mediasoup
+  npm:
+  - mediasoup
+  nvd: mediasoup
+  name: mediasoup
+  category: WebRTC
+  repo: versatica/mediasoup
+  tag_filter: '^3\.'
+  homepage: 'https://mediasoup.org'
+  desc:
+    en: "SFU library for Node.js and Rust."
+    ru: "SFU-библиотека для Node.js/Rust."
+- id: livekit
+  npm:
+  - livekit-client
+  docker:
+  - livekit/livekit-server
+  deps:
+  - 'pion:linked'
+  nvd: LiveKit
+  name: LiveKit
+  category: WebRTC
+  repo: livekit/livekit
+  homepage: 'https://livekit.io'
+  desc:
+    en: "SFU in Go with a SIP gateway and an agents framework."
+    ru: "SFU на Go с SIP-шлюзом и фреймворком агентов."
+- id: pion
+  name: Pion WebRTC
+  category: WebRTC
+  repo: pion/webrtc
+  homepage: 'https://pion.ly'
+  desc:
+    en: "Pure Go implementation of WebRTC."
+    ru: "Чистая Go-реализация WebRTC."
+- id: pjsip
+  nvd: PJSIP
+  # the PJSIP channel driver of Asterisk (res_pjsip) is not the library
+  nvd_exclude: '(?i)channel driver|res_pjsip|chan_pjsip|discovered in (digium )?asterisk|asterisk is an open|pjsip in asterisk'
+  name: PJSIP
+  category: SIP Stack
+  repo: pjsip/pjproject
+  homepage: 'https://www.pjsip.org'
+  desc:
+    en: "SIP and media stack in C (used by Asterisk res_pjsip)."
+    ru: "SIP/медиа-стек на C (используется в Asterisk res_pjsip)."
+- id: sofia-sip
+  nvd: Sofia-SIP
+  name: Sofia-SIP
+  category: SIP Stack
+  repo: freeswitch/sofia-sip
+  homepage: 'https://github.com/freeswitch/sofia-sip'
+  desc:
+    en: "SIP user agent library (the base of FreeSWITCH mod_sofia)."
+    ru: "SIP User-Agent библиотека (основа mod_sofia FreeSWITCH)."
+- id: sipgo
+  name: sipgo
+  category: SIP Stack
+  repo: emiago/sipgo
+  homepage: 'https://github.com/emiago/sipgo'
+  desc:
+    en: "Fast SIP library in Go."
+    ru: "Быстрая SIP-библиотека на Go."
+- id: baresip
+  deps:
+  - 'libre:linked'
+  - 'opus:optional'
+  nvd: baresip
+  name: baresip
+  category: SIP Stack
+  repo: baresip/baresip
+  homepage: 'https://github.com/baresip/baresip'
+  desc:
+    en: "Modular SIP user agent."
+    ru: "Модульный SIP user agent."
+- id: libre
+  name: libre (re)
+  category: SIP Stack
+  repo: baresip/re
+  homepage: 'https://github.com/baresip/re'
+  desc:
+    en: "Base SIP/SDP/RTP library of baresip."
+    ru: "Базовая библиотека SIP/SDP/RTP для baresip."
+- id: linphone
+  deps:
+  - 'opus:linked'
+  nvd: Linphone
+  name: Linphone SDK
+  category: SIP Stack
+  repo: BelledonneCommunications/linphone-sdk
+  homepage: 'https://www.linphone.org'
+  desc:
+    en: "SDK of the Linphone SIP client (liblinphone, mediastreamer2)."
+    ru: "SDK SIP-клиента Linphone (liblinphone, mediastreamer2)."
+- id: jssip
+  npm:
+  - jssip
+  name: JsSIP
+  category: SIP Stack
+  repo: versatica/JsSIP
+  homepage: 'https://jssip.net'
+  desc:
+    en: "SIP over WebSocket for the browser."
+    ru: "SIP over WebSocket для браузера."
+- id: sipjs
+  npm:
+  - sip.js
+  name: SIP.js
+  category: SIP Stack
+  repo: onsip/SIP.js
+  homepage: 'https://sipjs.com'
+  desc:
+    en: "JavaScript SIP stack for WebRTC."
+    ru: "JavaScript SIP-стек для WebRTC."
+- id: drachtio-srf
+  npm:
+  - drachtio-srf
+  deps:
+  - 'drachtio:runtime'
+  name: drachtio-srf
+  category: SIP Stack
+  repo: drachtio/drachtio-srf
+  homepage: 'https://drachtio.org'
+  desc:
+    en: "Node.js signaling framework for drachtio-server."
+    ru: "Node.js фреймворк сигнализации для drachtio-server."
+- id: homer
+  deps:
+  - 'heplify:runtime'
+  name: HOMER
+  category: Monitoring
+  repo: sipcapture/homer
+  homepage: 'https://sipcapture.org'
+  desc:
+    en: "SIP/RTCP capture and analysis platform (HEP)."
+    ru: "Платформа захвата и анализа SIP/RTCP (HEP)."
+- id: heplify
+  docker:
+  - sipcapture/heplify
+  name: heplify
+  category: Monitoring
+  repo: sipcapture/heplify
+  homepage: 'https://sipcapture.org'
+  desc:
+    en: "HEP capture agent."
+    ru: "HEP-агент захвата трафика."
+- id: heplify-server
+  docker:
+  - sipcapture/heplify-server
+  name: heplify-server
+  category: Monitoring
+  repo: sipcapture/heplify-server
+  homepage: 'https://sipcapture.org'
+  desc:
+    en: "HEP collector for HOMER."
+    ru: "HEP-коллектор для HOMER."
+- id: sngrep
+  nvd: sngrep
+  name: sngrep
+  category: Monitoring
+  repo: irontec/sngrep
+  tag_filter: ^v
+  homepage: 'https://github.com/irontec/sngrep'
+  desc:
+    en: "TUI viewer of SIP dialogs."
+    ru: "TUI-просмотрщик SIP-диалогов."
+- id: sipp
+  name: SIPp
+  category: Testing
+  repo: SIPp/sipp
+  homepage: 'https://sipp.sourceforge.net'
+  desc:
+    en: "SIP traffic generator: call scenarios, load and functional testing."
+    ru: "Генератор SIP-трафика: сценарии вызовов, нагрузочное и функциональное тестирование."
+- id: sipvicious
+  pypi:
+  - sipvicious
+  name: SIPVicious
+  category: Testing
+  repo: EnableSecurity/sipvicious
+  homepage: 'https://www.enablesecurity.com/sipvicious/'
+  desc:
+    en: "SIP security audit: finding PBXs, enumerating extensions, cracking passwords."
+    ru: "Аудит безопасности SIP: поиск АТС, перебор extension, подбор паролей."
+- id: jambonz
+  npm:
+  - '@jambonz/node-client-ws'
+  docker:
+  - jambonz/feature-server
+  deps:
+  - 'drachtio-srf:linked'
+  - 'drachtio:runtime'
+  - 'freeswitch:runtime'
+  - 'rtpengine:runtime'
+  name: jambonz
+  category: CPaaS/AI
+  repo: jambonz/jambonz-feature-server
+  homepage: 'https://jambonz.org'
+  desc:
+    en: "Open-source CPaaS (a Twilio alternative) with STT/TTS/LLM integrations."
+    ru: "Open-source CPaaS (альтернатива Twilio) с интеграцией STT/TTS/LLM."
+- id: fonoster
+  tag_filter: ^v
+  npm:
+  - '@fonoster/sdk'
+  deps:
+  - 'routr:runtime'
+  - 'asterisk:runtime'
+  name: Fonoster
+  category: CPaaS/AI
+  repo: fonoster/fonoster
+  homepage: 'https://fonoster.com'
+  desc:
+    en: "Open-source Twilio alternative, voice AI applications."
+    ru: "Open-source альтернатива Twilio, voice AI приложения."
+- id: pipecat
+  pypi:
+  - pipecat-ai
+  name: Pipecat
+  category: CPaaS/AI
+  repo: pipecat-ai/pipecat
+  homepage: 'https://pipecat.ai'
+  desc:
+    en: "Python framework of voice AI agents (Daily)."
+    ru: "Python-фреймворк голосовых AI-агентов (Daily)."
+- id: livekit-agents
+  pypi:
+  - livekit-agents
+  deps:
+  - 'livekit:runtime'
+  name: LiveKit Agents
+  category: CPaaS/AI
+  repo: livekit/agents
+  homepage: 'https://docs.livekit.io/agents/'
+  desc:
+    en: "Framework of realtime voice AI agents with SIP telephony."
+    ru: "Фреймворк realtime голосовых AI-агентов с SIP-телефонией."
+- id: ten
+  name: TEN Framework
+  category: CPaaS/AI
+  repo: TEN-framework/ten-framework
+  homepage: 'https://theten.ai'
+  desc:
+    en: "Framework of multimodal realtime AI agents (Agora)."
+    ru: "Фреймворк мультимодальных realtime AI-агентов (Agora)."
+- id: opus
+  nvd: libopus
+  nvd_filter: '(?i)libopus|opus codec|xiph'
+  nvd_exclude: '(?i)freerdp'
+  name: Opus
+  category: Codec/DSP
+  repo: xiph/opus
+  homepage: 'https://opus-codec.org'
+  desc:
+    en: "The Opus audio codec (with DRED and the ML improvements of 1.5+)."
+    ru: "Аудиокодек Opus (включая DRED/ML-улучшения 1.5+)."
+- id: spandsp
+  nvd: spandsp
+  name: SpanDSP
+  category: Codec/DSP
+  repo: freeswitch/spandsp
+  homepage: 'https://github.com/freeswitch/spandsp'
+  desc:
+    en: "DSP library: T.38 and fax, DTMF, tones."
+    ru: "DSP-библиотека: T.38/факс, DTMF, тоны."
+- id: sipssert
+  name: SIPssert
+  category: Testing
+  repo: OpenSIPS/SIPssert
+  track: commits
+  deps:
+  - 'sipp:runtime'
+  homepage: 'https://github.com/OpenSIPS/SIPssert'
+  desc:
+    en: "VoIP scenario test framework by OpenSIPS: tasks in Docker (SIPp, OpenSIPS, databases), YAML scenarios."
+    ru: "Фреймворк автотестов VoIP-сценариев от OpenSIPS: задачи в Docker (SIPp, OpenSIPS, БД), YAML-сценарии."
+- id: voip-patrol
+  name: VoIP Patrol
+  category: Testing
+  repo: jchavanton/voip_patrol
+  deps:
+  - 'pjsip:linked'
+  homepage: 'https://github.com/jchavanton/voip_patrol'
+  desc:
+    en: "Signaling and media tests on PJSUA: XML scenarios, registrations, calls, speech quality checks."
+    ru: "Автотесты сигнализации и медиа на PJSUA: XML-сценарии, регистрации, звонки, проверка качества речи."
+- id: sipexer
+  name: sipexer
+  category: Testing
+  repo: miconda/sipexer
+  homepage: 'https://github.com/miconda/sipexer'
+  desc:
+    en: "CLI for SIP requests by the Kamailio author: custom requests, registration floods, dialogs, fuzzing."
+    ru: "CLI для отправки SIP-запросов от автора Kamailio: свои запросы, флуд регистраций, диалоги, фаззинг."
+- id: sippts
+  pypi:
+  - sippts
+  name: SIPPTS
+  category: Testing
+  repo: Pepelux/sippts
+  homepage: 'https://github.com/Pepelux/sippts'
+  desc:
+    en: "SIP penetration testing suite: scanning, enumeration, flooding, pcap analysis, RTP attacks."
+    ru: "Набор для пентеста SIP: сканирование, перебор, флуд, анализ pcap, RTP-атаки."
+- id: mr-sip
+  name: Mr.SIP
+  category: Testing
+  repo: meliht/Mr.SIP
+  track: commits
+  news_match: '\bMr\.SIP\b'
+  homepage: 'https://github.com/meliht/Mr.SIP'
+  desc:
+    en: "Audit and attack tool for SIP infrastructure (scanning, DoS, spoofing)."
+    ru: "Инструмент аудита и атак на SIP-инфраструктуру (сканирование, DoS, спуфинг)."
+- id: sipsak
+  name: sipsak
+  category: Testing
+  repo: nils-ohlmeier/sipsak
+  homepage: 'https://github.com/nils-ohlmeier/sipsak'
+  desc:
+    en: "The classic SIP Swiss army knife: OPTIONS ping, flooding, tracing."
+    ru: "Классический «швейцарский нож» SIP: OPTIONS-пинг, флуд, трассировка."
+- id: lk-cli
+  name: LiveKit CLI
+  category: Testing
+  repo: livekit/livekit-cli
+  deps:
+  - 'livekit:runtime'
+  news_match: ''
+  homepage: 'https://docs.livekit.io/home/cli/'
+  desc:
+    en: "LiveKit CLI with the `lk load-test` load test (publishers, subscribers, simulated calls)."
+    ru: "CLI LiveKit с нагрузочным тестом `lk load-test` (публикаторы/подписчики, симуляция звонков)."
+- id: asterisk-testsuite
+  name: Asterisk testsuite
+  category: Testing
+  repo: asterisk/testsuite
+  track: commits
+  deps:
+  - 'asterisk:runtime'
+  - 'sipp:runtime'
+  news_match: ''
+  homepage: 'https://docs.asterisk.org/Test-Suite-Documentation/'
+  desc:
+    en: "The official integration test suite of Asterisk (SIPp, StarPy, pjsua)."
+    ru: "Официальный набор интеграционных тестов Asterisk (SIPp, StarPy, pjsua)."
+- id: kamailio-tests
+  name: kamailio-tests
+  category: Testing
+  repo: kamailio/kamailio-tests
+  track: commits
+  deps:
+  - 'kamailio:runtime'
+  news_match: ''
+  homepage: 'https://github.com/kamailio/kamailio-tests'
+  desc:
+    en: "Kamailio tests in Docker containers."
+    ru: "Набор тестов Kamailio в Docker-контейнерах."
+- id: jitsi-torture
+  name: jitsi-meet-torture
+  category: Testing
+  repo: jitsi/jitsi-meet-torture
+  track: commits
+  deps:
+  - 'jitsi-meet:runtime'
+  news_match: ''
+  homepage: 'https://github.com/jitsi/jitsi-meet-torture'
+  desc:
+    en: "Selenium tests and load scenarios for Jitsi Meet."
+    ru: "Selenium-тесты и нагрузочные сценарии для Jitsi Meet."
+- id: issabel
+  name: IssabelPBX
+  category: PBX
+  repo: IssabelFoundation/issabelPBX
+  track: commits
+  deps:
+  - 'asterisk:platform'
+  nvd: Issabel
+  homepage: 'https://www.issabel.org'
+  desc:
+    en: "A fork of Elastix: distribution and web GUI on top of Asterisk."
+    ru: "Форк Elastix: дистрибутив и веб-GUI поверх Asterisk."
+- id: libresbc
+  name: LibreSBC
+  category: SIP Proxy
+  repo: hnimminh/libresbc
+  deps:
+  - 'kamailio:runtime'
+  - 'freeswitch:runtime'
+  homepage: 'https://github.com/hnimminh/libresbc'
+  desc:
+    en: "Open-source SBC built on Kamailio and FreeSWITCH."
+    ru: "Open-source SBC на базе Kamailio и FreeSWITCH."
+- id: galene
+  name: Galène
+  category: WebRTC
+  repo: jech/galene
+  news_match: '\bgal[eè]ne\b'
+  homepage: 'https://galene.org'
+  desc:
+    en: "Lightweight video conferencing server (SFU) in Go."
+    ru: "Лёгкий видеоконференц-сервер (SFU) на Go."
+- id: ome
+  docker:
+  - airensoft/ovenmediaengine
+  name: OvenMediaEngine
+  category: WebRTC
+  repo: AirenSoft/OvenMediaEngine
+  nvd: OvenMediaEngine
+  homepage: 'https://airensoft.com/ome.html'
+  desc:
+    en: "Sub-second latency streaming server: WebRTC, LL-HLS, SRT."
+    ru: "Стриминг-сервер с субсекундной задержкой: WebRTC, LL-HLS, SRT."
+- id: mediamtx
+  docker:
+  - bluenviron/mediamtx
+  name: MediaMTX
+  category: WebRTC
+  repo: bluenviron/mediamtx
+  nvd: MediaMTX
+  homepage: 'https://github.com/bluenviron/mediamtx'
+  desc:
+    en: "Media server and proxy: RTSP, RTMP, WebRTC, SRT, HLS."
+    ru: "Медиасервер/прокси: RTSP, RTMP, WebRTC, SRT, HLS."
+- id: antmedia
+  name: Ant Media Server
+  category: WebRTC
+  repo: ant-media/Ant-Media-Server
+  nvd: Ant Media
+  news_match: '\bant media\b'
+  homepage: 'https://antmedia.io'
+  desc:
+    en: "WebRTC streaming server (community edition)."
+    ru: "WebRTC-стриминг сервер (community edition)."
+- id: sipsorcery
+  name: SIPSorcery
+  category: SIP Stack
+  repo: sipsorcery-org/sipsorcery
+  homepage: 'https://sipsorcery-org.github.io/sipsorcery/'
+  desc:
+    en: "SIP and WebRTC stack for .NET."
+    ru: "SIP и WebRTC стек для .NET."
+- id: diago
+  name: diago
+  category: SIP Stack
+  repo: emiago/diago
+  deps:
+  - 'sipgo:linked'
+  news_match: ''
+  homepage: 'https://github.com/emiago/diago'
+  desc:
+    en: "Go framework of VoIP applications on top of sipgo: calls, media, bridging."
+    ru: "Фреймворк VoIP-приложений на Go поверх sipgo: звонки, медиа, бриджинг."
+- id: sipgrep
+  name: sipgrep
+  category: Monitoring
+  repo: sipcapture/sipgrep
+  homepage: 'https://github.com/sipcapture/sipgrep'
+  desc:
+    en: "Capture and filtering of SIP messages in the console (HEP-compatible)."
+    ru: "Захват и фильтрация SIP-сообщений в консоли (HEP-совместимый)."
+- id: ultravox
+  name: Ultravox
+  category: CPaaS/AI
+  repo: fixie-ai/ultravox
+  homepage: 'https://ultravox.ai'
+  desc:
+    en: "Open speech-native LLM for voice agents."
+    ru: "Открытая speech-native LLM для голосовых агентов."
+- id: vocode
+  pypi:
+  - vocode
+  name: Vocode
+  category: CPaaS/AI
+  repo: vocodedev/vocode-core
+  homepage: 'https://vocode.dev'
+  desc:
+    en: "Framework of voice LLM agents with telephony."
+    ru: "Фреймворк голосовых LLM-агентов с телефонией."

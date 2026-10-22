@@ -1,0 +1,40 @@
+# Отраслевые события: month - типичный месяц (если стабилен), query - запрос новостей.
+events:
+- id: fosdem
+  name: FOSDEM (RTC devroom)
+  where: {en: "Brussels", ru: "Брюссель"}
+  month: 2
+  url: 'https://fosdem.org'
+  query: FOSDEM real time communications devroom
+- id: enterprise-connect
+  name: Enterprise Connect
+  where: {en: "USA", ru: "США"}
+  month: 3
+  url: 'https://enterpriseconnect.com'
+  query: '"Enterprise Connect" 2027'
+- id: kamailio-world
+  name: Kamailio World
+  where: {en: "Berlin", ru: "Берлин"}
+  url: 'https://www.kamailioworld.com'
+  query: '"Kamailio World"'
+- id: opensips-summit
+  name: OpenSIPS Summit
+  where: '-'
+  url: 'https://summit.opensips.org'
+  query: '"OpenSIPS Summit"'
+- id: cluecon
+  name: ClueCon
+  where: {en: "Chicago", ru: "Чикаго"}
+  month: 8
+  url: 'https://www.cluecon.com'
+  query: ClueCon
+- id: astricon
+  name: AstriCon
+  where: '-'
+  url: 'https://www.asterisk.org/community/astricon/'
+  query: AstriCon
+- id: rtcon
+  name: RTC.ON
+  where: {en: "Kraków", ru: "Краков"}
+  url: 'https://rtcon.live'
+  query: '"RTC.ON" conference'

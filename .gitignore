@@ -1,0 +1,6 @@
+.data/
+bin/
+dist/
+.claude/
+go.work
+go.work.sum

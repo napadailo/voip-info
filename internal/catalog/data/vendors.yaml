@@ -1,0 +1,116 @@
+# Коммерческие вендоры: ticker - котировки (Nasdaq API), query - запрос Google News.
+vendors:
+- id: sangoma
+  name: Sangoma
+  segment: PBX/UCaaS
+  ticker: SANG
+  query: Sangoma
+  desc:
+    en: "Owner of Asterisk and FreePBX: UCaaS and hardware."
+    ru: "Владелец Asterisk и FreePBX, UCaaS и оборудование."
+- id: twilio
+  name: Twilio
+  segment: CPaaS
+  ticker: TWLO
+  query: Twilio
+  desc:
+    en: "The largest CPaaS platform: voice, SMS, voice AI."
+    ru: "Крупнейшая CPaaS-платформа: голос, SMS, Voice AI."
+- id: ringcentral
+  name: RingCentral
+  segment: UCaaS
+  ticker: RNG
+  query: RingCentral
+  desc:
+    en: "UCaaS and cloud telephony, AI receptionist."
+    ru: "UCaaS / облачная телефония, AI-ресепшн."
+- id: 8x8
+  name: 8x8
+  segment: UCaaS/CCaaS
+  ticker: EGHT
+  query: '"8x8" communications'
+  desc:
+    en: "UCaaS and contact centers."
+    ru: "UCaaS и контакт-центры."
+- id: bandwidth
+  name: Bandwidth
+  segment: CPaaS/Carrier
+  ticker: BAND
+  query: '"Bandwidth Inc" OR "Bandwidth" voice API'
+  desc:
+    en: "CPaaS with its own carrier network in the US."
+    ru: "CPaaS с собственной сетью оператора в США."
+- id: ooma
+  name: Ooma
+  segment: UCaaS/SMB
+  ticker: OOMA
+  query: Ooma
+  desc:
+    en: "VoIP for homes and small business."
+    ru: "VoIP для дома и малого бизнеса."
+- id: five9
+  name: Five9
+  segment: CCaaS
+  ticker: FIVN
+  query: Five9
+  desc:
+    en: "Cloud contact centers."
+    ru: "Облачные контакт-центры."
+- id: zoom
+  name: Zoom
+  segment: UCaaS
+  ticker: ZM
+  query: '"Zoom Phone" OR "Zoom Contact Center"'
+  desc:
+    en: "Video conferencing, Zoom Phone, contact center."
+    ru: "ВКС, Zoom Phone, контакт-центр."
+- id: vonage
+  name: Vonage (Ericsson)
+  segment: CPaaS
+  ticker: ERIC
+  query: Vonage
+  desc:
+    en: "CPaaS and network APIs, owned by Ericsson."
+    ru: "CPaaS / Network APIs, принадлежит Ericsson."
+- id: 3cx
+  name: 3CX
+  segment: PBX
+  query: 3CX
+  desc:
+    en: "Software PBX for the mass SMB market (private)."
+    ru: "Софтверная PBX, массовый рынок SMB (частная)."
+- id: avaya
+  name: Avaya
+  segment: UC/CCaaS
+  query: Avaya
+  desc:
+    en: "Enterprise UC and contact centers (private)."
+    ru: "Корпоративные UC и контакт-центры (частная)."
+- id: mitel
+  name: Mitel
+  segment: UC/PBX
+  query: Mitel
+  desc:
+    en: "Enterprise UC and PBX (private)."
+    ru: "Корпоративные UC/PBX (частная)."
+- id: sinch
+  name: Sinch
+  segment: CPaaS
+  query: Sinch
+  desc:
+    en: "CPaaS (listed in Stockholm)."
+    ru: "CPaaS (котируется в Стокгольме)."
+- id: vapi
+  name: Vapi
+  segment: Voice AI
+  query: Vapi voice AI
+  desc:
+    en: "Platform of voice AI agents (private)."
+    ru: "Платформа голосовых AI-агентов (частная)."
+- id: retell
+  name: Retell AI
+  segment: Voice AI
+  query: '"Retell AI"'
+  desc:
+    en: "Voice AI agents for call centers (private)."
+    ru: "Голосовые AI-агенты для колл-центров (частная)."

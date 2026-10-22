@@ -1,0 +1,90 @@
+# Ленты новостей. kind: project, industry, market, regional, community, lists.
+# type: rss (по умолчанию), hn (url - запросы через |), pipermail (url - база архива рассылки).
+feeds:
+- name: OpenSIPS blog
+  url: 'https://blog.opensips.org/feed/'
+  kind: project
+  product: opensips
+- name: Kamailio
+  url: 'https://www.kamailio.org/w/feed/'
+  kind: project
+  product: kamailio
+- name: Jitsi blog
+  url: 'https://jitsi.org/blog/feed/'
+  kind: project
+  product: jitsi-meet
+- name: Sipwise
+  url: 'https://www.sipwise.com/feed/'
+  kind: project
+  product: rtpengine
+- name: webrtcHacks
+  url: 'https://webrtchacks.com/feed/'
+  kind: industry
+- name: BlogGeek.me
+  url: 'https://bloggeek.me/feed/'
+  kind: industry
+- name: No Jitter
+  url: 'https://www.nojitter.com/rss.xml'
+  kind: industry
+- name: Fierce Network
+  url: 'https://www.fierce-network.com/rss/xml'
+  kind: industry
+  filter: '(?i)voice|voip|sip|ucaas|ccaas|cpaas|telephon|call|webrtc|5g voice|ims|carrier'
+- name: 'GN: VoIP market'
+  url: 'https://news.google.com/rss/search?q=VoIP+OR+%22SIP+trunking%22+OR+CPaaS+OR+UCaaS+when:30d&hl=en-US&gl=US&ceid=US:en'
+  kind: market
+- name: 'GN: open-source VoIP'
+  url: 'https://news.google.com/rss/search?q=Asterisk+PBX+OR+FreeSWITCH+OR+Kamailio+OR+OpenSIPS+OR+FreePBX+OR+Issabel+when:30d&hl=en-US&gl=US&ceid=US:en'
+  kind: market
+- name: 'GN: voice AI'
+  url: 'https://news.google.com/rss/search?q=%22voice+AI%22+telephony+OR+%22voice+agent%22+SIP+when:30d&hl=en-US&gl=US&ceid=US:en'
+  kind: market
+- name: 'GN: VoIP security'
+  url: 'https://news.google.com/rss/search?q=(VoIP+OR+PBX+OR+%22SIP+server%22+OR+SBC)+(vulnerability+OR+exploit+OR+CVE+OR+%22toll+fraud%22)+when:30d&hl=en-US&gl=US&ceid=US:en'
+  kind: market
+  filter: '(?i)voip|pbx|\bsip\b|\bsbc\b|telephon|asterisk|issabel|3cx|avaya|mitel|yealink|grandstream|polycom|toll fraud|vishing'
+- name: HN
+  url: 'voip|sip trunk|asterisk|freeswitch|kamailio|opensips|webrtc|voice agent|telephony|twilio'
+  kind: community
+  type: hn
+- name: Kamailio sr-users
+  url: 'https://lists.kamailio.org/mailman3/hyperkitty/list/sr-users@lists.kamailio.org/feed/'
+  kind: lists
+  product: kamailio
+- name: OpenSIPS users
+  url: 'https://lists.opensips.org/pipermail/users/'
+  kind: lists
+  product: opensips
+  type: pipermail
+- name: Asterisk forum
+  url: 'https://community.asterisk.org/c/asterisk/6.rss'
+  kind: lists
+  product: asterisk
+- name: 'GN: IP-телефония (KZ)'
+  url: 'https://news.google.com/rss/search?q=%22IP-%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B8%D1%8F%22+OR+VoIP+OR+%22%D0%B2%D0%B8%D1%80%D1%82%D1%83%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F+%D0%90%D0%A2%D0%A1%22+when:30d&hl=ru&gl=KZ&ceid=KZ:ru'
+  kind: regional
+- name: 'GN: связь Казахстан'
+  url: 'https://news.google.com/rss/search?q=%D0%9A%D0%B0%D0%B7%D0%B0%D1%85%D1%82%D0%B5%D0%BB%D0%B5%D0%BA%D0%BE%D0%BC+OR+Kcell+OR+%22%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80+%D1%81%D0%B2%D1%8F%D0%B7%D0%B8%22+%D0%9A%D0%B0%D0%B7%D0%B0%D1%85%D1%81%D1%82%D0%B0%D0%BD+when:30d&hl=ru&gl=KZ&ceid=KZ:ru'
+  kind: regional
+- name: 'GN: телефония и колл-центры (RU)'
+  url: 'https://news.google.com/rss/search?q=%22IP-%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B8%D1%8F%22+OR+%22%D0%BA%D0%BE%D0%BD%D1%82%D0%B0%D0%BA%D1%82-%D1%86%D0%B5%D0%BD%D1%82%D1%80%22+OR+%22%D0%B3%D0%BE%D0%BB%D0%BE%D1%81%D0%BE%D0%B2%D0%BE%D0%B9+%D1%80%D0%BE%D0%B1%D0%BE%D1%82%22+when:30d&hl=ru&gl=RU&ceid=RU:ru'
+  kind: regional
+- name: ComNews
+  url: 'https://www.comnews.ru/rss'
+  kind: regional
+- name: CNews
+  url: 'https://www.cnews.ru/inc/rss/news.xml'
+  kind: regional
+  filter: '(?i)телефон|voip|\bsip\b|связ|телеком|оператор|колл-?центр|контакт-?центр|атс|голосов|звонк|5g|сотов|ростелеком|мтс|билайн|мегафон|мошенни'
+- name: TAdviser
+  url: 'https://www.tadviser.ru/xml/tadviser.xml'
+  kind: regional
+  filter: '(?i)телефон|voip|\bsip\b|связ|телеком|оператор|колл-?центр|контакт-?центр|атс|голосов|звонк|5g|сотов|казахтелеком'
+- name: Profit.kz
+  url: 'https://profit.kz/rss/'
+  kind: regional
+  filter: '(?i)телефон|voip|связ|телеком|оператор|колл-?центр|контакт-?центр|звонк|5g|сотов|казахтелеком|kcell|beeline|tele2|мошенни|цод|интернет'
+- name: Digital Business KZ
+  url: 'https://digitalbusiness.kz/feed/'
+  kind: regional
+  filter: '(?i)телефон|voip|связ|телеком|оператор|колл-?центр|контакт-?центр|звонк|5g|сотов|казахтелеком|kcell|beeline|tele2|мошенни|ии|ai'
