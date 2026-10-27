@@ -145,7 +145,7 @@ func (a *App) infoLines() [][2]string {
 		{N("Category"), a.categoryInfo()},
 		{N("New releases"), theme.Tag(theme.OK) + fmt.Sprint(a.hub.NewCount()) + "[-]" + a.newsInfo()},
 		{N("CVE/30d"), a.securityInfo()},
-		{N("Updated"), upd + " · " + tui.Faint(i18n.Lang())},
+		{N("Updated"), upd + " · " + tui.Faint(i18n.Lang()+" · "+Version)},
 	}
 }
 

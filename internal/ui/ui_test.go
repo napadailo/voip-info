@@ -316,7 +316,7 @@ func TestReleasesFeedAndLanguage(t *testing.T) {
 	h.waitRe(`Releases\[\d{3}\]`, `9\.1\.0-rc1\s+9\.1\s+pre`)
 	h.keys(":lang ru")
 	h.key(tcell.KeyEnter)
-	h.waitRe(`Релизы\[\d{3}\]`, `ПРОДУКТ`, `Категория:\s+все · продуктов: \d+`, `Обновлено:\s+\S+ · ru`, `<0> все\s+<5> SIP Stack`)
+	h.waitRe(`Релизы\[\d{3}\]`, `ПРОДУКТ`, `Категория:\s+все · продуктов: \d+`, `Обновлено:\s+\S+ · ru · dev`, `<0> все\s+<5> SIP Stack`)
 	// the descriptions of the catalog follow the language too
 	h.keys(":asterisk")
 	h.key(tcell.KeyEnter)
