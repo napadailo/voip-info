@@ -44,3 +44,13 @@ func TestAffectsUnknownWithoutRanges(t *testing.T) {
 		t.Error("no ranges must be unknown")
 	}
 }
+
+func TestInBranch(t *testing.T) {
+	vu := &model.Vuln{Ranges: []model.Range{{EndExcl: "15.0.66"}, {StartIncl: "16.0", EndExcl: "16.0.89"}, {EndExcl: "17.0.3"}}}
+	if rs := InBranch(vu, "16.0.45"); len(rs) != 1 || rs[0].EndExcl != "16.0.89" {
+		t.Errorf("%+v", rs)
+	}
+	if rs := InBranch(vu, "18.0.1"); len(rs) != 0 {
+		t.Errorf("no range of 18: %+v", rs)
+	}
+}

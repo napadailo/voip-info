@@ -53,9 +53,15 @@ func TestAssess(t *testing.T) {
 	}
 	mod := &model.Vuln{ID: "CVE-3", Severity: "critical", Published: now, Module: "endpoint",
 		Ranges: []model.Range{{StartIncl: "6.0", EndExcl: "6.0.9"}}}
-	a = Assess(st, "6.0.3", "", Context{Vulns: []*model.Vuln{mod}, KEV: func(*model.Vuln) bool { return true }})
-	if len(a.Affected) != 0 || len(a.KEV) != 0 || len(a.Modules) != 1 || a.Action != "check the modules: %d exploited (KEV)" {
-		t.Errorf("the versions of a module are not mine: %+v", a)
+	other := &model.Vuln{ID: "CVE-4", Severity: "critical", Published: now, Module: "ucp", Ranges: []model.Range{{EndExcl: "7.0.9"}}}
+	a = Assess(st, "6.0.3", "", Context{Vulns: []*model.Vuln{mod, other}, KEV: func(*model.Vuln) bool { return true }})
+	if len(a.Affected) != 0 || len(a.KEV) != 0 || len(a.Modules) != 1 || len(a.ModuleKEV) != 1 ||
+		a.Action != "check the modules: %d exploited (KEV)" || a.ModuleKEVNote() != "" {
+		t.Errorf("the versions of a module are not mine, a module of another major is not here: %+v", a)
+	}
+	a = Assess(st, "6.0.2", "", Context{Vulns: []*model.Vuln{high, mod}, KEV: func(v *model.Vuln) bool { return v == mod }})
+	if a.Action != "update: %d high/critical" || a.ModuleKEVNote() != "endpoint" {
+		t.Errorf("an exploited module beside another action: %+v", a)
 	}
 	a = Assess(st, "6.0.3", "", Context{Support: []eol.Branch{{Branch: "6.0", Status: "security"}}})
 	if a.Urgency != Info || a.Action != "branch is security-only" {

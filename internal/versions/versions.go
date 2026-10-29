@@ -110,3 +110,24 @@ func FixedIn(vu *model.Vuln, version string) []string {
 	}
 	return out
 }
+
+// InBranch are the ranges of a vulnerability on the major version of
+// version: a module of FreePBX 16 is 16.x. Nil when version has none.
+func InBranch(vu *model.Vuln, version string) []model.Range {
+	v := Parse(version)
+	if v == nil {
+		return nil
+	}
+	var out []model.Range
+	for _, r := range vu.Ranges {
+		for _, b := range []string{r.Exact, r.EndExcl, r.EndIncl, r.StartIncl, r.StartExcl} {
+			if bv := Parse(b); bv != nil {
+				if bv[0] == v[0] {
+					out = append(out, r)
+				}
+				break
+			}
+		}
+	}
+	return out
+}

@@ -27,7 +27,30 @@ func actionText(as *inventory.Assessment) string {
 	if as.Urgency == inventory.Urgent && as.Target() != "" {
 		s += " → " + as.Target()
 	}
+	if m := as.ModuleKEVNote(); m != "" {
+		s += " · " + Tf("KEV in the module %s", m)
+	}
 	return s
+}
+
+// moduleStatus is where a vulnerability of a module stands for my version:
+// the vulnerable versions of the module on my branch.
+func moduleStatus(v *model.Vuln, version string) string {
+	if r, ok := moduleRange(v, version); ok {
+		return Tf("module %s: vulnerable %s", v.Module, rangeText(r))
+	}
+	return Tf("module %s: check its version", v.Module)
+}
+
+// moduleRange is the vulnerable range of a module on the branch of version;
+// an exact CPE version ("16.0") is FreePBX's, not the module's.
+func moduleRange(v *model.Vuln, version string) (model.Range, bool) {
+	for _, r := range versions.InBranch(v, version) {
+		if r.Exact == "" {
+			return r, true
+		}
+	}
+	return model.Range{}, false
 }
 
 // updateFixes counts the affecting vulnerabilities the newest release of the branch closes.
@@ -71,7 +94,7 @@ func newMineView(a *App) *listView {
 				continue
 			}
 			cells := []string{st.Product.Name, as.Version, tui.Trunc(as.Note, 16), as.Branch, "?", "-", "0",
-				fmt.Sprint(len(as.Affected)), "0", "", "", fmt.Sprint(len(as.Unknown) + len(as.Modules)), "", actionText(as)}
+				fmt.Sprint(len(as.Affected)), "0", "", "", fmt.Sprint(len(as.Unknown)), "", actionText(as)}
 			tones := map[int]tui.Tone{1: tui.ToneAccent, 2: tui.ToneDim, 4: tui.ToneDim, 5: tui.ToneAccent, 6: tui.ToneOK,
 				7: tui.ToneOK, 8: tui.ToneOK, 11: tui.ToneDim, 13: urgencyTone(as.Urgency)}
 			if as.Support != nil {
@@ -89,7 +112,7 @@ func newMineView(a *App) *listView {
 			if n := len(as.Serious()); n > 0 {
 				cells[8], tones[8] = fmt.Sprint(n), tui.ToneErr
 			}
-			if n := len(as.KEV); n > 0 {
+			if n := len(as.KEV) + len(as.ModuleKEV); n > 0 {
 				cells[9], tones[9] = fmt.Sprint(n), tui.ToneErr
 			}
 			cells[10], tones[10] = updateFixes(as)
@@ -156,10 +179,21 @@ func (a *App) showAssessment(as *inventory.Assessment) {
 		if n := len(as.Modules); n > 0 {
 			c.KV(N("in modules"), Tf("%d: a module has its own version, check it on the system", n))
 		}
+		if m := as.ModuleKEVNote(); m != "" {
+			c.KV(N("exploited (KEV)"), tui.Paint(theme.Err, Tf("in the module %s", m)))
+		}
 		return c.String()
 	}
 	rows := func() []vulnRow {
 		var out []vulnRow
+		// exploited vulnerabilities of my modules first, then my version's, then the other modules'
+		modules := append([]*model.Vuln(nil), as.Modules...)
+		sort.SliceStable(modules, func(i, j int) bool { return a.hub.RiskLess(modules[i], modules[j]) })
+		for _, v := range modules {
+			if a.hub.KEVOf(v) != nil {
+				out = append(out, vulnRow{v, moduleStatus(v, as.Version), tui.ToneErr})
+			}
+		}
 		affected := append([]*model.Vuln(nil), as.Affected...)
 		sort.SliceStable(affected, func(i, j int) bool { return a.hub.RiskLess(affected[i], affected[j]) })
 		for _, v := range affected {
@@ -176,12 +210,10 @@ func (a *App) showAssessment(as *inventory.Assessment) {
 		for _, v := range as.Unknown {
 			out = append(out, vulnRow{v, T("no version data: check by hand"), tui.ToneWarn})
 		}
-		for _, v := range as.Modules {
-			tone := tui.ToneWarn
-			if a.hub.KEVOf(v) != nil {
-				tone = tui.ToneErr
+		for _, v := range modules {
+			if a.hub.KEVOf(v) == nil {
+				out = append(out, vulnRow{v, moduleStatus(v, as.Version), tui.ToneWarn})
 			}
-			out = append(out, vulnRow{v, Tf("module %s: check its version", v.Module), tone})
 		}
 		for _, i := range a.hub.Inherited(as.ID, 365, 1) {
 			status := a.hub.States[i.Upstream].Product.Name + " " + inheritedMark(i.Status) + " " + inheritedLabel(i.Status)

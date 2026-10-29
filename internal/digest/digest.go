@@ -511,6 +511,9 @@ func (w *writer) mine() {
 		if a.Urgency == inventory.Urgent && a.Target() != "" {
 			action += " → " + a.Target()
 		}
+		if m := a.ModuleKEVNote(); m != "" {
+			action += " · " + Tf("KEV in the module %s", m)
+		}
 		w.add(fmt.Sprintf("- %s **%s %s**: %s", mark, w.name(a.ID), a.Version, action))
 		n++
 	}

@@ -276,7 +276,7 @@ the date added, CVE, vendor, product, ransomware, EPSS and the product of the ca
 | LATEST IN BRANCH, BEHIND | where to update without changing the branch, how many releases came after yours |
 | CVE, HIGH+, KEV | the vulnerabilities that affect your very version (by the version ranges of GitHub advisories and NVD CPEs) |
 | UPDATE FIXES | how many of them the latest of the branch closes |
-| NO DATA 1Y | vulnerabilities of a year without version ranges or in FreePBX modules: worth a check by hand |
+| NO DATA 1Y | vulnerabilities of a year without version ranges: worth a check by hand |
 | CVE DEPS | vulnerabilities of the dependencies of a year without a fix |
 | ACTION | the recommendation |
 
@@ -481,8 +481,10 @@ FreePBX itself and the versions of the module: CVE-2025-57819 is fixed in endpoi
 [FreePBX/security-reporting](https://github.com/FreePBX/security-reporting), where each names its package:
 the module. For CVEs missing there the module is looked for in the CPE and the NVD description ("the
 endpoint module", "patched in endpoint versions"). A vulnerability of a module is not compared with your
-FreePBX version: its card names the module, `:mine` says "module endpoint: check its version" (Admin →
-Module Admin).
+FreePBX version. Modules share the major version of FreePBX, so for FreePBX 16 only the ranges of 16.x
+modules count: `:mine` says "module endpoint: vulnerable < 16.0.89" (Admin → Module Admin), and
+vulnerabilities of 17 modules only are left out. Exploited (KEV) vulnerabilities of modules come first in
+the list, count in the KEV column and are added to the action: "… · KEV in the module endpoint".
 
 ### Docker images
 

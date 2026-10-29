@@ -157,7 +157,8 @@ type Assessment struct {
 	Mine              *model.Release   // my release in the feed, if it is there
 	Affected          []*model.Vuln
 	Unknown           []*model.Vuln // no version ranges (last year)
-	Modules           []*model.Vuln // in a module, its version is not mine (last year or KEV)
+	Modules           []*model.Vuln // in a module of my major version, its version is not mine (last year or KEV)
+	ModuleKEV         []*model.Vuln // the exploited ones of Modules
 	KEV               []*model.Vuln
 	Support           *eol.Branch
 	Action            string // English format, translated with Args by the UI (urgent ones add → Target)
@@ -171,6 +172,23 @@ func (a *Assessment) Target() string {
 		return a.Latest.Tag
 	}
 	return ""
+}
+
+// ModuleKEVNote names the modules with exploited vulnerabilities when the
+// action is about something else: "endpoint, ucp"; "" when none.
+func (a *Assessment) ModuleKEVNote() string {
+	if len(a.ModuleKEV) == 0 || a.Action == "check the modules: %d exploited (KEV)" {
+		return ""
+	}
+	var names []string
+	seen := map[string]bool{}
+	for _, v := range a.ModuleKEV {
+		if !seen[v.Module] {
+			seen[v.Module] = true
+			names = append(names, v.Module)
+		}
+	}
+	return strings.Join(names, ", ")
 }
 
 // Serious are the affected high and critical vulnerabilities.
@@ -214,17 +232,20 @@ func Assess(st *model.ProductState, version, note string, c Context) *Assessment
 			}
 		}
 	}
-	var moduleKEV int
 	for _, vu := range c.Vulns {
 		affected, known := versions.Affects(vu, version)
 		kev := c.KEV != nil && c.KEV(vu)
 		switch {
 		case vu.Module != "":
+			// the module of another major version (FreePBX 17 modules on 16) is not here
+			if len(vu.Ranges) > 0 && len(versions.InBranch(vu, version)) == 0 {
+				continue
+			}
 			if kev || vu.AgeDays() <= 365 {
 				a.Modules = append(a.Modules, vu)
 			}
 			if kev {
-				moduleKEV++
+				a.ModuleKEV = append(a.ModuleKEV, vu)
 			}
 		case affected:
 			a.Affected = append(a.Affected, vu)
@@ -257,8 +278,8 @@ func Assess(st *model.ProductState, version, note string, c Context) *Assessment
 		a.Urgency, a.Action, a.Args = Urgent, N("URGENT: %d exploited vulnerabilities (KEV)"), []any{len(a.KEV)}
 	case len(serious) > 0:
 		a.Urgency, a.Action, a.Args = Urgent, N("update: %d high/critical"), []any{len(serious)}
-	case moduleKEV > 0:
-		a.Urgency, a.Action, a.Args = Update, N("check the modules: %d exploited (KEV)"), []any{moduleKEV}
+	case len(a.ModuleKEV) > 0:
+		a.Urgency, a.Action, a.Args = Update, N("check the modules: %d exploited (KEV)"), []any{len(a.ModuleKEV)}
 	case status == "eol" || status == "eol?":
 		a.Urgency, a.Action = Update, N("unsupported branch - plan the migration")
 	case len(a.Behind) > 0:

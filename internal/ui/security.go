@@ -15,6 +15,7 @@ import (
 	"github.com/napadailo/voip-info/internal/model"
 	"github.com/napadailo/voip-info/internal/relnotes"
 	"github.com/napadailo/voip-info/internal/sources/threat"
+	"github.com/napadailo/voip-info/internal/versions"
 )
 
 func severityTone(sev string) tui.Tone {
@@ -356,7 +357,12 @@ func (a *App) showVuln(vu *model.Vuln) {
 		c.KV(N("aliases"), esc(strings.Join(vu.Aliases, ", ")))
 	}
 	if len(vu.Ranges) > 0 {
-		if vu.Module != "" {
+		// an exact CPE version ("16.0") is FreePBX's, not the module's
+		exact := true
+		for _, r := range vu.Ranges {
+			exact = exact && r.Exact != ""
+		}
+		if vu.Module != "" && !exact {
 			c.Section(Tf("Affected versions of the %s module", vu.Module))
 		} else {
 			c.Section(N("Affected versions"))
@@ -380,7 +386,15 @@ func (a *App) showVuln(vu *model.Vuln) {
 	if mine := a.hub.Assess(vu.Product); mine != nil {
 		c.Section(N("My version"))
 		if vu.Module != "" {
-			c.KVRaw(mine.Version, tui.Paint(theme.Warn, Tf("not comparable: the versions are of the %s module, check it on the system", vu.Module)))
+			r, ok := moduleRange(vu, mine.Version)
+			switch {
+			case ok:
+				c.KVRaw(mine.Version, tui.Paint(theme.Warn, Tf("the %s module of this branch is vulnerable %s: check its version on the system", vu.Module, rangeText(r))))
+			case len(vu.Ranges) > 0 && len(versions.InBranch(vu, mine.Version)) == 0:
+				c.KVRaw(mine.Version, tui.Paint(theme.OK, Tf("the %s module of this branch is not affected", vu.Module)))
+			default:
+				c.KVRaw(mine.Version, tui.Paint(theme.Warn, Tf("not comparable: the versions are of the %s module, check it on the system", vu.Module)))
+			}
 		}
 		for _, x := range mine.Affected {
 			if x == vu {
