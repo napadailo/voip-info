@@ -51,6 +51,12 @@ func TestAssess(t *testing.T) {
 	if len(a.KEV) != 1 || a.Action != "URGENT: %d exploited vulnerabilities (KEV)" {
 		t.Errorf("%+v", a)
 	}
+	mod := &model.Vuln{ID: "CVE-3", Severity: "critical", Published: now, Module: "endpoint",
+		Ranges: []model.Range{{StartIncl: "6.0", EndExcl: "6.0.9"}}}
+	a = Assess(st, "6.0.3", "", Context{Vulns: []*model.Vuln{mod}, KEV: func(*model.Vuln) bool { return true }})
+	if len(a.Affected) != 0 || len(a.KEV) != 0 || len(a.Modules) != 1 || a.Action != "check the modules: %d exploited (KEV)" {
+		t.Errorf("the versions of a module are not mine: %+v", a)
+	}
 	a = Assess(st, "6.0.3", "", Context{Support: []eol.Branch{{Branch: "6.0", Status: "security"}}})
 	if a.Urgency != Info || a.Action != "branch is security-only" {
 		t.Errorf("%+v", a)

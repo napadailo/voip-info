@@ -339,7 +339,11 @@ func (a *App) threatLines(c *tui.Card, vu *model.Vuln) {
 // showVuln opens the card of a vulnerability.
 func (a *App) showVuln(vu *model.Vuln) {
 	st := a.hub.States[vu.Product]
-	c := tui.NewCard(vu.ID + " · " + st.Product.Name)
+	title := vu.ID + " · " + st.Product.Name
+	if vu.Module != "" {
+		title += " · " + Tf("module %s", vu.Module)
+	}
+	c := tui.NewCard(title)
 	score := "-"
 	if vu.Score > 0 {
 		score = fmt.Sprintf("%.1f", vu.Score)
@@ -352,7 +356,11 @@ func (a *App) showVuln(vu *model.Vuln) {
 		c.KV(N("aliases"), esc(strings.Join(vu.Aliases, ", ")))
 	}
 	if len(vu.Ranges) > 0 {
-		c.Section(N("Affected versions"))
+		if vu.Module != "" {
+			c.Section(Tf("Affected versions of the %s module", vu.Module))
+		} else {
+			c.Section(N("Affected versions"))
+		}
 		for _, r := range vu.Ranges {
 			fixed := ""
 			if r.Fixed != "" {
@@ -371,6 +379,9 @@ func (a *App) showVuln(vu *model.Vuln) {
 	}
 	if mine := a.hub.Assess(vu.Product); mine != nil {
 		c.Section(N("My version"))
+		if vu.Module != "" {
+			c.KVRaw(mine.Version, tui.Paint(theme.Warn, Tf("not comparable: the versions are of the %s module, check it on the system", vu.Module)))
+		}
 		for _, x := range mine.Affected {
 			if x == vu {
 				c.KVRaw(mine.Version, tui.Paint(theme.Err, T("affected")))

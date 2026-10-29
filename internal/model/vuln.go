@@ -24,6 +24,9 @@ type Vuln struct {
 	Source      string   // nvd or github
 	Aliases     []string // GHSA ids of a CVE and the like
 	Ranges      []Range
+	// Module is the module of a modular product the vulnerability is in
+	// (FreePBX endpoint): the ranges are its versions, not the product's.
+	Module string
 }
 
 // AgeDays since publication.

@@ -38,6 +38,10 @@ func (v *ProductView) renderSecurity() {
 	h, id := v.app.hub, v.st.Product.ID
 	var list []vulnRow
 	for _, vu := range h.Vulns(id) {
+		if vu.Module != "" {
+			list = append(list, vulnRow{vu, Tf("module %s", vu.Module), tui.ToneDim})
+			continue
+		}
 		list = append(list, vulnRow{vu, T("own"), tui.ToneDim})
 	}
 	for _, i := range h.Inherited(id, 180, 2) {

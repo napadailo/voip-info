@@ -46,6 +46,7 @@ products:
   deps:
   - 'asterisk:platform'
   nvd: FreePBX
+  modules: framework
   name: FreePBX
   category: PBX
   repo: FreePBX/framework

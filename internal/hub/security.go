@@ -103,7 +103,7 @@ func (h *Hub) Vulns(id string) []*model.Vuln {
 		if cur.Source == "nvd" && v.Source == "github" {
 			if len(v.Ranges) == 0 {
 				cp := *v
-				cp.Ranges = cur.Ranges
+				cp.Ranges, cp.Module = cur.Ranges, cur.Module
 				v = &cp
 			}
 			byID[v.ID] = v

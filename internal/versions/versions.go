@@ -80,10 +80,10 @@ func InRange(v []int, r model.Range) (in, ok bool) {
 }
 
 // Affects reports whether version is vulnerable; known false when the
-// vulnerability has no ranges that can be read.
+// vulnerability has no ranges that can be read or they are a module's.
 func Affects(vu *model.Vuln, version string) (affected, known bool) {
 	v := Parse(version)
-	if v == nil || len(vu.Ranges) == 0 {
+	if v == nil || len(vu.Ranges) == 0 || vu.Module != "" {
 		return false, false
 	}
 	allOut := true

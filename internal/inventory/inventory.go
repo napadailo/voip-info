@@ -157,6 +157,7 @@ type Assessment struct {
 	Mine              *model.Release   // my release in the feed, if it is there
 	Affected          []*model.Vuln
 	Unknown           []*model.Vuln // no version ranges (last year)
+	Modules           []*model.Vuln // in a module, its version is not mine (last year or KEV)
 	KEV               []*model.Vuln
 	Support           *eol.Branch
 	Action            string // English format, translated with Args by the UI (urgent ones add → Target)
@@ -213,12 +214,21 @@ func Assess(st *model.ProductState, version, note string, c Context) *Assessment
 			}
 		}
 	}
+	var moduleKEV int
 	for _, vu := range c.Vulns {
 		affected, known := versions.Affects(vu, version)
+		kev := c.KEV != nil && c.KEV(vu)
 		switch {
+		case vu.Module != "":
+			if kev || vu.AgeDays() <= 365 {
+				a.Modules = append(a.Modules, vu)
+			}
+			if kev {
+				moduleKEV++
+			}
 		case affected:
 			a.Affected = append(a.Affected, vu)
-			if c.KEV != nil && c.KEV(vu) {
+			if kev {
 				a.KEV = append(a.KEV, vu)
 			}
 		case !known && vu.AgeDays() <= 365:
@@ -247,6 +257,8 @@ func Assess(st *model.ProductState, version, note string, c Context) *Assessment
 		a.Urgency, a.Action, a.Args = Urgent, N("URGENT: %d exploited vulnerabilities (KEV)"), []any{len(a.KEV)}
 	case len(serious) > 0:
 		a.Urgency, a.Action, a.Args = Urgent, N("update: %d high/critical"), []any{len(serious)}
+	case moduleKEV > 0:
+		a.Urgency, a.Action, a.Args = Update, N("check the modules: %d exploited (KEV)"), []any{moduleKEV}
 	case status == "eol" || status == "eol?":
 		a.Urgency, a.Action = Update, N("unsupported branch - plan the migration")
 	case len(a.Behind) > 0:

@@ -71,7 +71,7 @@ func newMineView(a *App) *listView {
 				continue
 			}
 			cells := []string{st.Product.Name, as.Version, tui.Trunc(as.Note, 16), as.Branch, "?", "-", "0",
-				fmt.Sprint(len(as.Affected)), "0", "", "", fmt.Sprint(len(as.Unknown)), "", actionText(as)}
+				fmt.Sprint(len(as.Affected)), "0", "", "", fmt.Sprint(len(as.Unknown) + len(as.Modules)), "", actionText(as)}
 			tones := map[int]tui.Tone{1: tui.ToneAccent, 2: tui.ToneDim, 4: tui.ToneDim, 5: tui.ToneAccent, 6: tui.ToneOK,
 				7: tui.ToneOK, 8: tui.ToneOK, 11: tui.ToneDim, 13: urgencyTone(as.Urgency)}
 			if as.Support != nil {
@@ -153,6 +153,9 @@ func (a *App) showAssessment(as *inventory.Assessment) {
 		}
 		c.KV(N("vulnerabilities"), Tf("affected %d, without version data %d, of dependencies without a fix %d",
 			len(as.Affected), len(as.Unknown), len(a.pendingInherited(as.ID))))
+		if n := len(as.Modules); n > 0 {
+			c.KV(N("in modules"), Tf("%d: a module has its own version, check it on the system", n))
+		}
 		return c.String()
 	}
 	rows := func() []vulnRow {
@@ -172,6 +175,13 @@ func (a *App) showAssessment(as *inventory.Assessment) {
 		}
 		for _, v := range as.Unknown {
 			out = append(out, vulnRow{v, T("no version data: check by hand"), tui.ToneWarn})
+		}
+		for _, v := range as.Modules {
+			tone := tui.ToneWarn
+			if a.hub.KEVOf(v) != nil {
+				tone = tui.ToneErr
+			}
+			out = append(out, vulnRow{v, Tf("module %s: check its version", v.Module), tone})
 		}
 		for _, i := range a.hub.Inherited(as.ID, 365, 1) {
 			status := a.hub.States[i.Upstream].Product.Name + " " + inheritedMark(i.Status) + " " + inheritedLabel(i.Status)

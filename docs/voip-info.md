@@ -276,7 +276,7 @@ the date added, CVE, vendor, product, ransomware, EPSS and the product of the ca
 | LATEST IN BRANCH, BEHIND | where to update without changing the branch, how many releases came after yours |
 | CVE, HIGH+, KEV | the vulnerabilities that affect your very version (by the version ranges of GitHub advisories and NVD CPEs) |
 | UPDATE FIXES | how many of them the latest of the branch closes |
-| NO DATA 1Y | vulnerabilities of a year without version ranges: worth a check by hand |
+| NO DATA 1Y | vulnerabilities of a year without version ranges or in FreePBX modules: worth a check by hand |
 | CVE DEPS | vulnerabilities of the dependencies of a year without a fix |
 | ACTION | the recommendation |
 
@@ -473,6 +473,13 @@ versions). Whether a vulnerability affects a version comes from version ranges: 
 CPEs. Without ranges a vulnerability counts as neither affecting nor safe: it goes to "no data".
 [KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) is confirmed exploitation in attacks,
 [EPSS](https://www.first.org/epss/) the probability of exploitation in the next 30 days.
+
+FreePBX is made of modules (framework, core, endpoint, api, backup, cdr and more), each with its own version.
+NVD often labels a vulnerability of a module with the CPE of FreePBX itself and the versions of the module:
+CVE-2025-57819 is fixed in endpoint 16.0.89, not in FreePBX 16.0.89. So the module is taken from the CPE and
+the description ("the endpoint module", "patched in endpoint versions"), and such a vulnerability is not
+compared with your FreePBX version: its card names the module, `:mine` says "module endpoint: check its
+version" (Admin → Module Admin). When NVD names no module, the vulnerability is compared as usual.
 
 ### Docker images
 

@@ -54,3 +54,33 @@ func TestRangesOfOtherProductsAreDropped(t *testing.T) {
 		t.Errorf("one other CPE product is the product itself: %+v", r)
 	}
 }
+
+func TestModule(t *testing.T) {
+	p := &catalog.Product{ID: "freepbx", Name: "FreePBX", Modules: "framework", Deps: []string{"asterisk:platform"}}
+	cpe := func(product string) []cpeMatch {
+		return []cpeMatch{{Vulnerable: true, Criteria: "cpe:2.3:a:sangoma:" + product + ":*:*:*:*:*:*:*:*"}}
+	}
+	for _, c := range []struct {
+		desc    string
+		matches []cpeMatch
+		want    string
+	}{
+		{"FreePBX 15, 16, and 17 endpoints are vulnerable. This issue has been patched in endpoint versions 15.0.66, 16.0.89, and 17.0.3.", cpe("freepbx"), "endpoint"},
+		{"Prior to 17.0.5 and 16.0.17, FreePBX module api (PBX API) is vulnerable to privilege escalation.", nil, "api"},
+		{"contactmanager is a module for FreePBX@, which is an open source GUI.", nil, "contactmanager"},
+		{"Prior to versions 16.0.4 and 17.0.6, the FreePBX Music on Hold (MoH) module contains a flaw.", nil, "music on hold"},
+		{"An issue was discovered in FreePBX core before 3.0.122.43.", nil, "core"},
+		{"In Contactmanager 13.x before 13.0.45.3 an XSS exists.", cpe("contactmanager"), "contactmanager"},
+		{"Prior to 16.0.47 and 17.0.30, the FreePBX Framework module permits a crafted backup.", cpe("freepbx"), ""},
+		{"In FreePBX 15, 16, and 17, connections can cause the uninstall function for certain modules.", cpe("freepbx"), ""},
+		{"A vulnerability exists in the safe_asterisk script.", cpe("certified_asterisk"), ""},
+		{"It does not verify the type of uploaded (valid FreePBX module) files.", nil, ""},
+	} {
+		if got := module(p, c.desc, c.matches); got != c.want {
+			t.Errorf("%q: %q, want %q", c.desc, got, c.want)
+		}
+	}
+	if got := module(&catalog.Product{ID: "asterisk", Name: "Asterisk"}, "the res_pjsip module crashes", nil); got != "" {
+		t.Errorf("a product without modules: %q", got)
+	}
+}

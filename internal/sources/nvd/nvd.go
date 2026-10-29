@@ -141,6 +141,89 @@ func ranges(p *catalog.Product, matches []cpeMatch) []model.Range {
 	return nil
 }
 
+var (
+	parenRe = regexp.MustCompile(`\s*\([^)]*\)`)
+	// the ways NVD names the module of FreePBX a CVE is in
+	moduleRes = []*regexp.Regexp{
+		regexp.MustCompile(`^([\w &-]{2,40}?) is an? (?:[\w ]+ )?module\b`),                          // contactmanager is a module for FreePBX
+		regexp.MustCompile(`(?i)\bFreePBX module ([a-z]\w+)`),                                        // FreePBX module api
+		regexp.MustCompile(`(?i)\b(?:patched|fixed) in ([a-z]\w+) versions?\b`),                      // patched in endpoint versions
+		regexp.MustCompile(`(?i)\bin (?:FreePBX )?([a-z]\w+) (?:\d+\.x )?before\b`),                  // in FreePBX core before
+		regexp.MustCompile(`(?i)\b(?:in|before|FreePBX) ([a-z][a-z_]+) (?:up to |through )?\d+\.\d`), // FreePBX cdr 14.0
+	}
+	moduleWordRe = regexp.MustCompile(`(?i)\bmodule\b`)
+	// words that end the name of a module when reading back from "module"
+	moduleStop = map[string]bool{"the": true, "a": true, "an": true, "of": true, "in": true, "for": true, "and": true,
+		"freepbx": true, "sangoma": true, "within": true, "by": true, "with": true, "to": true, "from": true,
+		"via": true, "is": true, "are": true, "that": true, "its": true}
+	notModule = map[string]bool{"certain": true, "this": true, "same": true, "each": true, "any": true, "valid": true,
+		"affected": true, "vulnerable": true, "asterisk": true, "versions": true, "version": true}
+)
+
+// module is the module of a modular product a CVE is in, "" when it is the
+// product itself or none is named: a CPE of another product (contactmanager),
+// then the description ("the endpoint module", "patched in endpoint versions").
+func module(p *catalog.Product, desc string, matches []cpeMatch) string {
+	if p.Modules == "" {
+		return ""
+	}
+	own := func(n string) string {
+		n = strings.ToLower(strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(n), "FreePBX ")))
+		if n == "" || notModule[n] || n == strings.ToLower(p.Modules) || n == strings.ToLower(p.ID) || n == strings.ToLower(p.Name) {
+			return ""
+		}
+		return n
+	}
+	// CPEs of other products: modules, but not the distribution or a dependency (freepbx_linux_7, certified_asterisk)
+	related := []string{strings.ToLower(p.ID)}
+	for _, d := range p.Deps {
+		related = append(related, strings.SplitN(d, ":", 2)[0])
+	}
+	others := map[string]bool{}
+	for _, m := range matches {
+		parts := strings.Split(m.Criteria, ":")
+		if !m.Vulnerable || len(parts) < 5 || own(parts[4]) == "" {
+			continue
+		}
+		mod := true
+		for _, r := range related {
+			mod = mod && !strings.Contains(parts[4], r)
+		}
+		if mod {
+			others[own(parts[4])] = true
+		}
+	}
+	if len(others) == 1 {
+		for n := range others {
+			return n
+		}
+	}
+	desc = parenRe.ReplaceAllString(desc, "")
+	for _, re := range moduleRes {
+		for _, m := range re.FindAllStringSubmatch(desc, -1) {
+			if n := own(m[1]); n != "" {
+				return n
+			}
+		}
+	}
+	// "... the Endpoint Manager module": up to four words before "module"
+	for _, loc := range moduleWordRe.FindAllStringIndex(desc, -1) {
+		words := strings.Fields(desc[:loc[0]])
+		var name []string
+		for i := len(words) - 1; i >= 0 && len(name) < 4; i-- {
+			w := words[i]
+			if moduleStop[strings.ToLower(w)] || strings.ContainsAny(w, ".,;:") {
+				break
+			}
+			name = append([]string{w}, name...)
+		}
+		if n := own(strings.Join(name, " ")); n != "" {
+			return n
+		}
+	}
+	return ""
+}
+
 // Parse reads an NVD answer for a product.
 func Parse(p *catalog.Product, body []byte) ([]*model.Vuln, error) {
 	var resp response
@@ -180,7 +263,7 @@ func Parse(p *catalog.Product, body []byte) ([]*model.Vuln, error) {
 		}
 		out = append(out, &model.Vuln{ID: c.ID, Product: p.ID, Published: pub.UTC(), Severity: sev, Score: score,
 			Summary: Summarize(desc), Description: desc, URL: "https://nvd.nist.gov/vuln/detail/" + c.ID,
-			Source: "nvd", Ranges: ranges(p, matches)})
+			Source: "nvd", Ranges: ranges(p, matches), Module: module(p, desc, matches)})
 	}
 	return out, nil
 }
