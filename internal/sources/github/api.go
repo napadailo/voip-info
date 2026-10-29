@@ -88,17 +88,37 @@ func FetchMilestones(ctx context.Context, f *fetch.Fetcher, p *catalog.Product, 
 // FetchAdvisories returns the published security advisories of the
 // repository, or of the one the catalog names for them (FreePBX/security-reporting).
 func FetchAdvisories(ctx context.Context, f *fetch.Fetcher, p *catalog.Product, force, cacheOnly bool) ([]ghapi.Advisory, error) {
-	var as []ghapi.Advisory
 	repo := repoURL(p)
 	if p.Advisories != "" {
 		repo = API + "/repos/" + p.Advisories
 	}
-	err := getJSON(ctx, f, repo+"/security-advisories?state=published&per_page=100", 12*time.Hour, force, cacheOnly, &as)
-	if as == nil && err != nil {
-		return nil, err
+	// pages go by the cursor of the Link header (page= is ignored), 10 of 100 at most;
+	// a page that did not come is an error, a stale one is not
+	var as []ghapi.Advisory
+	var lastErr error
+	url := repo + "/security-advisories?state=published&per_page=100"
+	for i := 0; i < 10 && url != ""; i++ {
+		res := f.Get(ctx, url, fetch.Options{TTL: 12 * time.Hour, Force: force, API: true, CacheOnly: cacheOnly})
+		if res.Body == nil {
+			if i == 0 {
+				return nil, res.Err
+			}
+			lastErr = res.Err
+			break
+		}
+		var page []ghapi.Advisory
+		if err := json.Unmarshal(res.Body, &page); err != nil {
+			if i == 0 {
+				return nil, fmt.Errorf("json: %w", err)
+			}
+			lastErr = err
+			break
+		}
+		as = append(as, page...)
+		url = res.Next
 	}
 	if as == nil {
 		as = []ghapi.Advisory{}
 	}
-	return as, nil
+	return as, lastErr
 }

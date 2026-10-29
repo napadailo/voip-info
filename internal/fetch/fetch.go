@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 	"strconv"
 	"sync"
 	"time"
@@ -32,6 +33,7 @@ type Options struct {
 // Result of a request.
 type Result struct {
 	Body      []byte
+	Next      string // the next page (Link rel="next"), "" when none
 	Status    int
 	FromCache bool
 	Err       error // set together with a stale Body when the network failed
@@ -85,14 +87,14 @@ var ErrNotCached = fmt.Errorf("not cached")
 func (f *Fetcher) Get(ctx context.Context, url string, o Options) Result {
 	cached := f.store.Get(url)
 	if cached != nil && !o.Force && (cached.Age() < o.TTL || o.CacheOnly) {
-		return Result{Body: cached.Body, Status: cached.Status, FromCache: true}
+		return Result{Body: cached.Body, Next: cached.Next, Status: cached.Status, FromCache: true}
 	}
 	if o.CacheOnly {
 		return Result{Err: ErrNotCached}
 	}
 	stale := func(err error) Result {
 		if cached != nil {
-			return Result{Body: cached.Body, Status: cached.Status, FromCache: true, Err: err}
+			return Result{Body: cached.Body, Next: cached.Next, Status: cached.Status, FromCache: true, Err: err}
 		}
 		return Result{Err: err}
 	}
@@ -142,7 +144,7 @@ func (f *Fetcher) Get(ctx context.Context, url string, o Options) Result {
 	switch {
 	case resp.StatusCode == http.StatusNotModified && cached != nil:
 		_ = f.store.Touch(url)
-		return Result{Body: cached.Body, Status: cached.Status, FromCache: true}
+		return Result{Body: cached.Body, Next: cached.Next, Status: cached.Status, FromCache: true}
 	case resp.StatusCode == http.StatusAccepted:
 		// GitHub statistics are being computed: do not cache the empty answer
 		return Result{Status: resp.StatusCode, Err: fmt.Errorf("computing")}
@@ -151,10 +153,21 @@ func (f *Fetcher) Get(ctx context.Context, url string, o Options) Result {
 		if err != nil {
 			return stale(err)
 		}
-		_ = f.store.Put(url, resp.Header.Get("ETag"), resp.Header.Get("Last-Modified"), resp.StatusCode, body)
-		return Result{Body: body, Status: resp.StatusCode}
+		next := NextLink(resp.Header.Get("Link"))
+		_ = f.store.Put(url, resp.Header.Get("ETag"), resp.Header.Get("Last-Modified"), next, resp.StatusCode, body)
+		return Result{Body: body, Next: next, Status: resp.StatusCode}
 	}
 	return stale(fmt.Errorf("HTTP %d", resp.StatusCode))
+}
+
+var nextRe = regexp.MustCompile(`<([^>]+)>;\s*rel="next"`)
+
+// NextLink is the next page of a Link header: <…&after=…>; rel="next".
+func NextLink(link string) string {
+	if m := nextRe.FindStringSubmatch(link); m != nil {
+		return m[1]
+	}
+	return ""
 }
 
 func (f *Fetcher) noteRate(h http.Header) {

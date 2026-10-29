@@ -13,6 +13,7 @@ import (
 
 const schema = `
 CREATE TABLE IF NOT EXISTS http_cache (url TEXT PRIMARY KEY, etag TEXT, last_modified TEXT, status INTEGER, body BLOB, fetched_at REAL);
+CREATE TABLE IF NOT EXISTS http_next (url TEXT PRIMARY KEY, next TEXT);
 CREATE TABLE IF NOT EXISTS seen (product TEXT PRIMARY KEY, release_id TEXT, seen_at REAL);
 CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT);
 CREATE TABLE IF NOT EXISTS snapshot (product TEXT, day TEXT, metric TEXT, value REAL, PRIMARY KEY (product, day, metric));
@@ -41,6 +42,7 @@ func (s *Store) Close() error { return s.db.Close() }
 // CacheEntry is a stored HTTP response.
 type CacheEntry struct {
 	ETag, LastModified string
+	Next               string // the next page, from the Link header
 	Status             int
 	Body               []byte
 	Fetched            time.Time
@@ -55,20 +57,30 @@ func now() float64             { return float64(time.Now().UnixNano()) / 1e9 }
 // Get returns the cached response of url, or nil.
 func (s *Store) Get(url string) *CacheEntry {
 	var e CacheEntry
-	var etag, lm sql.NullString
+	var etag, lm, next sql.NullString
 	var at float64
-	err := s.db.QueryRow(`SELECT etag, last_modified, status, body, fetched_at FROM http_cache WHERE url=?`, url).
-		Scan(&etag, &lm, &e.Status, &e.Body, &at)
+	err := s.db.QueryRow(`SELECT c.etag, c.last_modified, c.status, c.body, c.fetched_at, n.next
+		FROM http_cache c LEFT JOIN http_next n ON n.url = c.url WHERE c.url=?`, url).
+		Scan(&etag, &lm, &e.Status, &e.Body, &at, &next)
 	if err != nil {
 		return nil
 	}
-	e.ETag, e.LastModified, e.Fetched = etag.String, lm.String, unix(at)
+	e.ETag, e.LastModified, e.Next, e.Fetched = etag.String, lm.String, next.String, unix(at)
 	return &e
 }
 
-// Put stores a response.
-func (s *Store) Put(url, etag, lastModified string, status int, body []byte) error {
-	_, err := s.db.Exec(`INSERT OR REPLACE INTO http_cache VALUES (?,?,?,?,?,?)`, url, etag, lastModified, status, body, now())
+// Put stores a response; next is the following page, "" when none. It is
+// kept apart from http_cache, which older versions write too.
+func (s *Store) Put(url, etag, lastModified, next string, status int, body []byte) error {
+	if _, err := s.db.Exec(`INSERT OR REPLACE INTO http_cache VALUES (?,?,?,?,?,?)`, url, etag, lastModified, status, body, now()); err != nil {
+		return err
+	}
+	var err error
+	if next != "" {
+		_, err = s.db.Exec(`INSERT OR REPLACE INTO http_next VALUES (?,?)`, url, next)
+	} else {
+		_, err = s.db.Exec(`DELETE FROM http_next WHERE url=?`, url)
+	}
 	return err
 }
 
