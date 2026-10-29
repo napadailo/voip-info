@@ -85,10 +85,15 @@ func FetchMilestones(ctx context.Context, f *fetch.Fetcher, p *catalog.Product, 
 	return ms, nil
 }
 
-// FetchAdvisories returns the published security advisories of the repository.
+// FetchAdvisories returns the published security advisories of the
+// repository, or of the one the catalog names for them (FreePBX/security-reporting).
 func FetchAdvisories(ctx context.Context, f *fetch.Fetcher, p *catalog.Product, force, cacheOnly bool) ([]ghapi.Advisory, error) {
 	var as []ghapi.Advisory
-	err := getJSON(ctx, f, repoURL(p)+"/security-advisories?state=published&per_page=50", 12*time.Hour, force, cacheOnly, &as)
+	repo := repoURL(p)
+	if p.Advisories != "" {
+		repo = API + "/repos/" + p.Advisories
+	}
+	err := getJSON(ctx, f, repo+"/security-advisories?state=published&per_page=100", 12*time.Hour, force, cacheOnly, &as)
 	if as == nil && err != nil {
 		return nil, err
 	}

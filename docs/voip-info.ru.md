@@ -469,12 +469,14 @@ NVD. Если диапазонов нет, уязвимость не счита�
 данных». [KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) - подтверждённая эксплуатация
 в атаках, [EPSS](https://www.first.org/epss/) - вероятность эксплуатации в ближайшие 30 дней.
 
-FreePBX состоит из модулей (framework, core, endpoint, api, backup, cdr и других), и у каждого своя версия.
-NVD часто подписывает уязвимость модуля CPE самого FreePBX с версиями модуля: CVE-2025-57819 исправлена в
-endpoint 16.0.89, а не в FreePBX 16.0.89. Поэтому модуль берётся из CPE и описания («the endpoint module»,
-«patched in endpoint versions»), и такая уязвимость не сравнивается с вашей версией FreePBX: в карточке
-указан модуль, в `:mine` - «модуль endpoint: проверьте его версию» (Admin → Module Admin). Если NVD модуль
-не назвал, уязвимость сравнивается как обычно.
+FreePBX состоит из модулей (framework, core, endpoint, api, backup, cdr и других), и у каждого своя версия;
+версия FreePBX - это версия framework. NVD часто подписывает уязвимость модуля CPE самого FreePBX с версиями
+модуля: CVE-2025-57819 исправлена в endpoint 16.0.89, а не в FreePBX 16.0.89. Поэтому advisories FreePBX
+берутся из [FreePBX/security-reporting](https://github.com/FreePBX/security-reporting), где у каждой записи
+указан пакет - он и есть модуль. Для CVE, которых там нет, модуль ищется в CPE и описании NVD («the
+endpoint module», «patched in endpoint versions»). Уязвимость модуля не сравнивается с вашей версией
+FreePBX: в карточке указан модуль, в `:mine` - «модуль endpoint: проверьте его версию» (Admin → Module
+Admin).
 
 ### Docker-образы
 

@@ -76,6 +76,9 @@ type Advisory struct {
 		Score float64 `json:"score"`
 	} `json:"cvss"`
 	Vulnerabilities []struct {
+		Package struct {
+			Name string `json:"name"`
+		} `json:"package"`
 		Range   string `json:"vulnerable_version_range"`
 		Patched string `json:"patched_versions"`
 	} `json:"vulnerabilities"`

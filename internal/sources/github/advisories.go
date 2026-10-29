@@ -47,8 +47,23 @@ func AdvisoryRanges(a ghapi.Advisory) []model.Range {
 	return out
 }
 
-// AdvisoryVulns turns advisories into vulnerabilities of product id.
-func AdvisoryVulns(id string, as []ghapi.Advisory) []*model.Vuln {
+// AdvisoryModule is the module of a modular product an advisory is about:
+// its package (endpoint, core), "" when it is the product's own module.
+func AdvisoryModule(own string, a ghapi.Advisory) string {
+	if own == "" {
+		return ""
+	}
+	for _, v := range a.Vulnerabilities {
+		if n := strings.ToLower(strings.TrimSpace(v.Package.Name)); n != "" && n != strings.ToLower(own) {
+			return n
+		}
+	}
+	return ""
+}
+
+// AdvisoryVulns turns advisories into vulnerabilities of product id; modules
+// is the own module of a modular product (catalog modules:).
+func AdvisoryVulns(id, modules string, as []ghapi.Advisory) []*model.Vuln {
 	var out []*model.Vuln
 	for _, a := range as {
 		pub := ghapi.Time(a.Published)
@@ -72,7 +87,8 @@ func AdvisoryVulns(id string, as []ghapi.Advisory) []*model.Vuln {
 			sev = "?"
 		}
 		out = append(out, &model.Vuln{ID: vid, Product: id, Published: pub, Severity: sev, Score: score, Summary: summary,
-			Description: a.Description, URL: a.URL, Source: "github", Aliases: []string{a.GHSA}, Ranges: AdvisoryRanges(a)})
+			Description: a.Description, URL: a.URL, Source: "github", Aliases: []string{a.GHSA}, Ranges: AdvisoryRanges(a),
+			Module: AdvisoryModule(modules, a)})
 	}
 	return out
 }

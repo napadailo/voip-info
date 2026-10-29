@@ -474,12 +474,15 @@ CPEs. Without ranges a vulnerability counts as neither affecting nor safe: it go
 [KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) is confirmed exploitation in attacks,
 [EPSS](https://www.first.org/epss/) the probability of exploitation in the next 30 days.
 
-FreePBX is made of modules (framework, core, endpoint, api, backup, cdr and more), each with its own version.
-NVD often labels a vulnerability of a module with the CPE of FreePBX itself and the versions of the module:
-CVE-2025-57819 is fixed in endpoint 16.0.89, not in FreePBX 16.0.89. So the module is taken from the CPE and
-the description ("the endpoint module", "patched in endpoint versions"), and such a vulnerability is not
-compared with your FreePBX version: its card names the module, `:mine` says "module endpoint: check its
-version" (Admin → Module Admin). When NVD names no module, the vulnerability is compared as usual.
+FreePBX is made of modules (framework, core, endpoint, api, backup, cdr and more), each with its own version;
+the version of FreePBX is that of framework. NVD often labels a vulnerability of a module with the CPE of
+FreePBX itself and the versions of the module: CVE-2025-57819 is fixed in endpoint 16.0.89, not in FreePBX
+16.0.89. So the advisories of FreePBX come from
+[FreePBX/security-reporting](https://github.com/FreePBX/security-reporting), where each names its package:
+the module. For CVEs missing there the module is looked for in the CPE and the NVD description ("the
+endpoint module", "patched in endpoint versions"). A vulnerability of a module is not compared with your
+FreePBX version: its card names the module, `:mine` says "module endpoint: check its version" (Admin →
+Module Admin).
 
 ### Docker images
 

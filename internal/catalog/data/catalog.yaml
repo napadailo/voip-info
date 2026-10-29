@@ -47,6 +47,7 @@ products:
   - 'asterisk:platform'
   nvd: FreePBX
   modules: framework
+  advisories: FreePBX/security-reporting
   name: FreePBX
   category: PBX
   repo: FreePBX/framework

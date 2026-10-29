@@ -82,7 +82,8 @@ func (h *Hub) Releases(id string) []*model.Release {
 }
 
 // Vulns of a product: NVD and GitHub advisories merged, one entry per id,
-// newest first. GitHub wins over NVD: its ranges name the patched versions.
+// newest first. GitHub wins over NVD: its ranges name the patched versions
+// and its package the module (FreePBX).
 func (h *Hub) Vulns(id string) []*model.Vuln {
 	if v, ok := h.vulns[id]; ok {
 		return v
@@ -103,7 +104,7 @@ func (h *Hub) Vulns(id string) []*model.Vuln {
 		if cur.Source == "nvd" && v.Source == "github" {
 			if len(v.Ranges) == 0 {
 				cp := *v
-				cp.Ranges, cp.Module = cur.Ranges, cur.Module
+				cp.Ranges = cur.Ranges
 				v = &cp
 			}
 			byID[v.ID] = v
@@ -112,7 +113,7 @@ func (h *Hub) Vulns(id string) []*model.Vuln {
 	for _, v := range st.NVD {
 		add(v)
 	}
-	for _, v := range github.AdvisoryVulns(id, st.GH.Advisories) {
+	for _, v := range github.AdvisoryVulns(id, st.Product.Modules, st.GH.Advisories) {
 		add(v)
 	}
 	out := make([]*model.Vuln, 0, len(order))

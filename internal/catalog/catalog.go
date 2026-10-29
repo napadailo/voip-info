@@ -26,6 +26,7 @@ type Product struct {
 	NVDFilter  string   `yaml:"nvd_filter"`  // regex over CVE descriptions
 	NVDExclude string   `yaml:"nvd_exclude"` // regex: CVE descriptions to drop
 	Modules    string   `yaml:"modules"`     // a modular product: the module whose versions are the product's
+	Advisories string   `yaml:"advisories"`  // GitHub owner/name of the security advisories, when not Repo
 	NewsMatch  *string  `yaml:"news_match"`  // regex for news; "" = never tag
 	Deps       []string `yaml:"deps"`        // "id:kind"
 	Track      string   `yaml:"track"`       // releases (default) or commits
